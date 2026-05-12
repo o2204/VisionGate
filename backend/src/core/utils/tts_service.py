@@ -1,10 +1,10 @@
-from TTS.api import TTS
+# from TTS.api import TTS
 import os
 from pathlib import Path
 
 from src.core.constant_manger import VOICE_DIR
 
-tts = TTS(model_name="tts_models/en/vctk/vits")
+# tts = TTS(model_name="tts_models/en/vctk/vits")
 
 
 Path(VOICE_DIR).mkdir(parents=True, exist_ok=True)
@@ -23,11 +23,12 @@ def speak_access(name: str | None, allowed=True):
     voice_path = f"{VOICE_DIR}/{file_name}"
 
     if not os.path.exists(voice_path):
-
-        tts.tts_to_file(
-            text=text,
-            speaker="p225",
-            file_path=voice_path
-        )
+        print(f"TTS Placeholder: {text}")
+        # tts.tts_to_file(
+        #     text=text,
+        #     speaker="p225",
+        #     file_path=voice_path
+        # )
+        return
 
     os.system(f"aplay {voice_path}")
