@@ -49,7 +49,7 @@ class UserService(BaseService):
             subject="Welcome to Our Service! Please Verify Your Email",
             context={
                 "username": user.name,
-                "verification_url": f"http://{settings.APP_DOMAIN}{router_prefix}/verify?token={token}"
+                "verification_url": f"http://{settings.APP_DOMAIN}{router_prefix}/verify-email?token={token}"
             },
             template_name="verify_email.html"
         )
@@ -64,7 +64,7 @@ class UserService(BaseService):
         if not user:
             return False
         
-        user.email_verified = True
+        user.is_verified = True
         await self._update(user)
         return True
     
@@ -80,6 +80,19 @@ class UserService(BaseService):
             raise HTTPException(status_code=404 ,detail="user not found.")
         
         self.auth.validate_credentials(user, password)
+
+        if not user.is_verified:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Please verify your email before logging in."
+            )
+        
+        if not user.image_path:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Face enrollment required. Please complete your profile."
+            )
+
         return self.auth.generate_token(user)
     
     async def send_password_reset_link(self, email, router_prefix):
@@ -139,6 +152,15 @@ class UserService(BaseService):
     
     async def get_verified_users_count(self) -> int:
         result = await self.session.scalar(
-            select(func.count()).select_from(self.model).where(self.model.email_verified.is_(True)) ## When is_(True) is used, it generates the SQL condition "email_verified IS TRUE"
+            select(func.count()).select_from(self.model).where(self.model.is_verified.is_(True)) 
         )
         return result or 0
+
+    async def update_face_image(self, user_id: UUID, image_path: str):
+        user = await self._get(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        
+        user.image_path = image_path
+        await self._update(user)
+        return user

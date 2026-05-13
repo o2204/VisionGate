@@ -43,6 +43,44 @@ class FaceRecognitionService(BaseService):
             notification
         )
 
+    def generate_embedding(self, image_path: str):
+        image = face_recognition.load_image_file(image_path)
+        face_locations = face_recognition.face_locations(image)
+        
+        if not face_locations:
+            return None
+            
+        encodings = face_recognition.face_encodings(image, face_locations)
+        if not encodings:
+            return None
+            
+        # Store as hex string
+        import pickle
+        return pickle.dumps(encodings[0]).hex()
+
+    def verify_similarity(self, stored_embedding_hex: str, current_image_path: str):
+        import pickle
+        stored_embedding = pickle.loads(bytes.fromhex(stored_embedding_hex))
+        
+        current_image = face_recognition.load_image_file(current_image_path)
+        current_locations = face_recognition.face_locations(current_image)
+        
+        if not current_locations:
+            return 0.0
+            
+        current_encodings = face_recognition.face_encodings(current_image, current_locations)
+        if not current_encodings:
+            return 0.0
+            
+        # distance = face_recognition.face_distance([stored_embedding], current_encodings[0])[0]
+        # similarity = 1 - distance
+        
+        # Alternatively use compare_faces with tolerance
+        is_match = face_recognition.compare_faces([stored_embedding], current_encodings[0], tolerance=0.15) # 0.15 tolerance roughly means 0.85 similarity
+        
+        distance = face_recognition.face_distance([stored_embedding], current_encodings[0])[0]
+        return 1 - distance
+
     async def recognize_face(
         self,
         file: UploadFile

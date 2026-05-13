@@ -9,6 +9,7 @@ from src.routers.face_router import face_router
 from src.routers.alert_router import alert_router
 from src.routers.gate_router import gate_router
 from src.routers.verify_router import verify_router 
+from fastapi.staticfiles import StaticFiles
 
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -21,6 +22,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.mount("/media", StaticFiles(directory="src/media"), name="media")
 
 # model = joblib.load("src/VisionGateModel.h5")
 model = None # Placeholder

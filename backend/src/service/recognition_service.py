@@ -7,8 +7,13 @@ import joblib
 from insightface.app import FaceAnalysis
 
 # Load trained classifier once
-# model = joblib.load("src/VisionGateModel.h5")
-model = None # Placeholder
+# Load trained classifier once
+try:
+    model = joblib.load("src/VisionGateModel.h5")
+    print("VisionGateModel loaded successfully.")
+except Exception as e:
+    print(f"Error loading VisionGateModel: {e}")
+    model = None
 
 # Load face analysis model once
 face_app = FaceAnalysis()

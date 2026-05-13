@@ -24,10 +24,16 @@ class AuthService:
         password: str,
         hashed: str
     ) -> bool:
-        return password_context.verify(
-            password,
-            hashed
-        )
+        try:
+            if not hashed:
+                return False
+            return password_context.verify(
+                password,
+                hashed
+            )
+        except ValueError:
+            # This happens if the hash in DB is malformed/corrupted
+            return False
 
     def generate_face_embedding(
         self,
