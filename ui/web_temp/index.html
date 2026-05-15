@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VisionGate | Smart Access Control</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Face API JS -->
+    <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo-container">
+                <div class="logo-icon">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <h1 class="logo-text">Vision<span>Gate</span></h1>
+            </div>
+
+            <nav class="nav-links">
+                <a href="#" class="nav-item active" data-section="dashboard">
+                    <i data-lucide="layout-dashboard"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="nav-item" data-section="logs">
+                    <i data-lucide="activity"></i>
+                    <span>Access Logs</span>
+                </a>
+                <a href="#" class="nav-item" data-section="users">
+                    <i data-lucide="users"></i>
+                    <span>User Management</span>
+                </a>
+                <a href="#" class="nav-item" id="start-scan-btn">
+                    <i data-lucide="scan-eye"></i>
+                    <span>Face Scan</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i data-lucide="log-out"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <h2 id="current-section-title">Admin Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
+                        <i data-lucide="sun" id="theme-icon-sun"></i>
+                        <i data-lucide="moon" id="theme-icon-moon" style="display: none;"></i>
+                    </button>
+                    <div class="user-profile">
+                        <div class="user-info">
+                            <span class="name">Mariam Admin</span>
+                            <span class="role">System Administrator</span>
+                        </div>
+                        <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Profile" class="user-avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <section id="dashboard-section" class="section active fade-in">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon total"><i data-lucide="users"></i></div>
+                                <div class="stat-trend up">
+                                    <i data-lucide="trending-up"></i>
+                                    <span>12%</span>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="total-entries">1,284</div>
+                            <div class="stat-label">Total Access Entries</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon granted"><i data-lucide="check-circle"></i></div>
+                                <div class="stat-trend up">
+                                    <i data-lucide="trending-up"></i>
+                                    <span>8%</span>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="granted-entries">1,156</div>
+                            <div class="stat-label">Granted Access</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <div class="stat-icon denied"><i data-lucide="x-circle"></i></div>
+                                <div class="stat-trend down">
+                                    <i data-lucide="trending-down"></i>
+                                    <span>4%</span>
+                                </div>
+                            </div>
+                            <div class="stat-value" id="denied-entries">128</div>
+                            <div class="stat-label">Denied Access</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Recent Access Activity</h3>
+                                <button class="btn btn-ghost">View All</button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>User</th>
+                                                <th>Role</th>
+                                                <th>Time</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-activity-body">
+                                            <!-- To be populated by JS -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Security Status</h3>
+                            </div>
+                            <div class="card-body">
+                                <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                    <div style="padding: 1rem; border-radius: 12px; background: var(--primary-light); color: var(--primary);">
+                                        <div style="font-weight: 700; display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;">
+                                            <i data-lucide="shield"></i> AI Engine Active
+                                        </div>
+                                        <p style="font-size: 0.75rem; opacity: 0.8;">Face recognition model v4.2 is running with 99.8% precision.</p>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.875rem;">
+                                            <span>System Integrity</span>
+                                            <span style="color: var(--success);">Optimal</span>
+                                        </div>
+                                        <div style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                                            <div style="width: 94%; height: 100%; background: var(--success);"></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                                        <div style="display: flex; justify-content: space-between; font-size: 0.875rem;">
+                                            <span>Network Latency</span>
+                                            <span style="color: var(--success);">14ms</span>
+                                        </div>
+                                        <div style="height: 6px; background: var(--border); border-radius: 3px; overflow: hidden;">
+                                            <div style="width: 88%; height: 100%; background: var(--primary);"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Access Logs Section -->
+                <section id="logs-section" class="section fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Complete Access History</h3>
+                            <div style="display: flex; gap: 1rem;">
+                                <input type="text" placeholder="Search logs..." style="padding: 0.5rem 1rem; border-radius: 8px; border: 1px solid var(--border); background: var(--bg-main); color: var(--text-main);">
+                                <button class="btn btn-primary"><i data-lucide="filter"></i> Filter</button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>User</th>
+                                            <th>Role</th>
+                                            <th>Time</th>
+                                            <th>Confidence</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="all-logs-body">
+                                        <!-- To be populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- User Management Section -->
+                <section id="users-section" class="section fade-in">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">Registered Members</h3>
+                            <button class="btn btn-primary"><i data-lucide="plus"></i> Add New User</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-container">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th>Member</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="user-management-body">
+                                        <!-- To be populated by JS -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Face Scan Modal -->
+    <div class="modal-overlay" id="scan-modal">
+        <div class="modal fade-in">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <h2 style="font-size: 1.5rem; margin-bottom: 0.5rem;">Face Recognition Scan</h2>
+                <p style="color: var(--text-muted);">Please look directly at the camera for authentication</p>
+            </div>
+            
+            <div class="scan-container">
+                <video id="video" autoplay muted playsinline class="scan-video-placeholder"></video>
+                <canvas id="overlay" style="position: absolute; inset: 0;"></canvas>
+                
+                <div class="scan-overlay">
+                    <div class="scan-line" id="scan-line"></div>
+                    <div class="scan-corners">
+                        <div class="scan-corner corner-tl"></div>
+                        <div class="scan-corner corner-tr"></div>
+                        <div class="scan-corner corner-bl"></div>
+                        <div class="scan-corner corner-br"></div>
+                    </div>
+                    <div class="scan-data" id="scan-metadata">
+                        [SYS_REQ]: SCAN_START<br>
+                        [AUTH]: PENDING...<br>
+                        [ID]: UNKNOWN
+                    </div>
+                </div>
+
+                <div class="scan-result" id="scan-result">
+                    <div id="result-icon" style="font-size: 3rem; margin-bottom: 1rem;"></div>
+                    <h3 id="result-title" style="margin-bottom: 0.5rem;">Access Granted</h3>
+                    <p id="result-msg" style="font-size: 0.875rem; color: #ccc;">Identity Verified: 98.4% Confidence</p>
+                    <button class="btn btn-primary" id="close-scan-btn" style="margin: 1.5rem auto 0;">Continue</button>
+                </div>
+            </div>
+
+            <div style="display: flex; justify-content: center; margin-top: 2rem; gap: 1rem;">
+                <button class="btn btn-ghost" id="cancel-scan-btn">Cancel Operation</button>
+                <button class="btn btn-primary" id="trigger-scan-logic">Initialize Scan</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+</html>

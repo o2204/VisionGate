@@ -39,6 +39,11 @@ class UserModel(Base):
         nullable=True
     )
 
+    face_embedding: Mapped[str | None] = mapped_column(
+        String,
+        nullable=True
+    )
+
     is_verified: Mapped[bool] = mapped_column(
         Boolean,
         default=False
