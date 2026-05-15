@@ -192,3 +192,30 @@ async def get_verified_users_count(
 ):
     count = await user_service.get_verified_users_count()
     return {"verified_users": count}
+@admin_router.get("/users")
+async def get_all_users(
+    admin: AdminDep,
+    user_service: UserServiceDep
+):
+    users = await user_service.get_all_users()
+    return users
+
+
+@admin_router.delete("/users/{user_id}")
+async def delete_user(
+    user_id: str,
+    admin: AdminDep,
+    user_service: UserServiceDep
+):
+    from uuid import UUID
+    await user_service.delete_user(UUID(user_id))
+    return {"message": "User deleted successfully"}
+
+
+@admin_router.delete("/users/all")
+async def delete_all_users(
+    admin: AdminDep,
+    user_service: UserServiceDep
+):
+    await user_service.delete_all_users()
+    return {"message": "All users deleted successfully"}

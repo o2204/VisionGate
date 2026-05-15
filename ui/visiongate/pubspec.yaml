@@ -18,6 +18,8 @@ dependencies:
   dio: ^5.3.0
   shared_preferences: ^2.2.1
   image_picker: ^1.0.4
+  google_sign_in: ^6.2.1
+  audioplayers: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -30,6 +32,7 @@ flutter:
 
   assets:
     - assets/images/
+    - assets/voices/
 
 #  fonts:
 #    - family: Orbitron

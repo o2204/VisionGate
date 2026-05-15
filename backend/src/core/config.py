@@ -23,6 +23,9 @@ class Settings(BaseSettings):
 
     APP_NAME: str = "VisionGate"
     APP_DOMAIN: str = "localhost:8000"
+
+    CLIENT_ID: str
+    CLIENT_SECRET: str
     
     model_config = _base_config
 

@@ -164,3 +164,18 @@ class UserService(BaseService):
         user.image_path = image_path
         await self._update(user)
         return user
+    async def get_all_users(self) -> list[UserModel]:
+        result = await self.session.scalars(select(self.model))
+        return result.all()
+
+    async def delete_user(self, user_id: UUID):
+        user = await self._get(user_id)
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        await self.session.delete(user)
+        await self.session.commit()
+
+    async def delete_all_users(self):
+        from sqlalchemy import delete
+        await self.session.execute(delete(self.model))
+        await self.session.commit()

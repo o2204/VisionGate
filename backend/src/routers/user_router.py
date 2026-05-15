@@ -9,12 +9,12 @@ from fastapi import APIRouter, Depends, Form, Request, File, UploadFile
 from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import EmailStr
 
-from src.schemas.user_schema import UserCreate 
 from src.core.container import UserServiceDep, get_user_token, FaceServiceDep, get_alert_service
 from src.service.alert_service import AlertService
-from src.schemas.user_schema import UserRead
+from src.schemas.user_schema import UserRead, UserCreate
 from src.clients.db.redis import add_jti_to_blacklist
 from src.core.config import settings
+import httpx
 
 from src.core.container import templates
 
@@ -55,6 +55,50 @@ async def login_user(
     return {
         "access_token": token,
         "token_type": "bearer"
+    }
+
+
+@user_router.post("/google-auth")
+async def google_auth(
+    token_id: Annotated[str, Form()],
+    service: UserServiceDep,
+):
+    """
+    Verify Google ID Token and login/signup user
+    """
+    # 1. Verify token with Google
+    async with httpx.AsyncClient() as client:
+        response = await client.get(f"https://oauth2.googleapis.com/tokeninfo?id_token={token_id}")
+        
+    if response.status_code != 200:
+        raise HTTPException(status_code=401, detail="Invalid Google Token")
+        
+    google_data = response.json()
+    email = google_data.get("email")
+    name = google_data.get("name", email.split('@')[0])
+    
+    if not email:
+        raise HTTPException(status_code=400, detail="Email not provided by Google")
+
+    # 2. Check if user exists, if not create
+    user = await service._get_by_email(email)
+    if not user:
+        # Create a new user with a random password since it's social login
+        user_data = {
+            "email": email,
+            "name": name,
+            "password": str(uuid.uuid4()), # Placeholder
+            "is_verified": True
+        }
+        user = await service._add_user(user_data, router_prefix=user_router.prefix)
+    
+    # 3. Generate Local Token
+    access_token = service.auth.generate_token(user)
+    
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": user
     }
 
 
