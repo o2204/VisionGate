@@ -1,7 +1,5 @@
 # VisionGate 🛡️
 
-![VisionGate Banner](assets/banner.png)
-
 VisionGate is an advanced, AI-powered smart security and access control system. It leverages cutting-edge computer vision, facial recognition, and liveness detection to provide a secure and futuristic environment. Built with a **FastAPI** backend and a **Flutter** frontend, VisionGate offers real-time monitoring, intelligent automation, and a stunning cyberpunk-themed dashboard.
 
 ## ✨ Key Features
@@ -64,12 +62,6 @@ VisionGate/
 2. **Download Fonts**: Ensure `Orbitron` and `Rajdhani` are placed in `assets/fonts/`.
 3. Install dependencies: `flutter pub get`
 4. Run the app: `flutter run`
-
-## 📸 Screenshots
-
-| Command Center | Face Recognition | Hardware Status |
-| :---: | :---: | :---: |
-| ![Command Center](assets/ss_command.png) | ![Face Scan](assets/ss_scan.png) | ![Hardware](assets/ss_hardware.png) |
 
 ## 🤝 Contributing
 
